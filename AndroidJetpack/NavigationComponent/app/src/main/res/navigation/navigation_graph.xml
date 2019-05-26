@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/navigation_graph"
+            app:startDestination="@id/mainFragment">
+
+    <fragment android:id="@+id/mainFragment" android:name="com.example.android.navigation.MainFragment"
+              android:label="fragment_main" tools:layout="@layout/fragment_main">
+        <action android:id="@+id/account" app:destination="@id/accountFragment"/>
+        <action android:id="@+id/setting" app:destination="@id/settingFragment"/>
+    </fragment>
+    <fragment android:id="@+id/accountFragment" android:name="com.example.android.navigation.AccountFragment"
+              android:label="fragment_account" tools:layout="@layout/fragment_account">
+        <action
+                android:id="@+id/name"
+                app:destination="@id/nameFragment"/>
+    </fragment>
+    <fragment android:id="@+id/settingFragment" android:name="com.example.android.navigation.SettingFragment"
+              android:label="fragment_setting" tools:layout="@layout/fragment_setting"/>
+    <fragment android:id="@+id/nameFragment" android:name="com.example.android.navigation.NameFragment"
+              android:label="fragment_name" tools:layout="@layout/fragment_name">
+        <argument android:name="nameArg"
+                  android:defaultValue=" "
+                  app:argType="string"/>
+    </fragment>
+</navigation>
