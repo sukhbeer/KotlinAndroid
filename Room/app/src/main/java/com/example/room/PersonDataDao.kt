@@ -11,6 +11,6 @@ interface PersonDataDao {
     fun getAll(): List<Person>
 
     @Insert
-    fun InsertData(person: Person)
+    fun insertData(person: Person)
 
 }
