@@ -61,7 +61,6 @@ import org.jetbrains.anko.*
          }
 
          listData.adapter = adapter
-
      }
 
 
