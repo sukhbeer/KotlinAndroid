@@ -1,6 +1,5 @@
 package com.example.notifications
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,7 +9,6 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +22,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        createNotificationChannel()
+
         notify.setOnClickListener {
             sendNotification()
         }
@@ -36,8 +36,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun createNotificationChannel(){
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-
 
         if(android.os.Build.VERSION.SDK_INT >=
                 android.os.Build.VERSION_CODES.O) run {
@@ -60,12 +58,11 @@ class MainActivity : AppCompatActivity() {
         val notificationPendingIntent = PendingIntent.getActivity(this,NOTIFICATION_ID,
             intent,PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val builder = NotificationCompat.Builder(this@MainActivity, NOTIFICATION_ID.toString())
+        return NotificationCompat.Builder(this@MainActivity, NOTIFICATION_ID.toString())
             .setContentTitle("You've been notified")
             .setContentText("This is you notification text.")
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setAutoCancel(true)
             .setContentIntent(notificationPendingIntent)
-        return builder
     }
 }
