@@ -27,10 +27,10 @@
 
     <Button android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="About me!"
+            android:text="Update me!"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:id="@+id/about"
+            android:id="@+id/update"
     />
 
     <Button android:layout_width="wrap_content"
