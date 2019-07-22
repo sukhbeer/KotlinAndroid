@@ -26,7 +26,7 @@ public class Note {
         this.priority = priority;
     }
 
-    public void setId(int id) {
+    void setId(int id) {
         this.id = id;
     }
 

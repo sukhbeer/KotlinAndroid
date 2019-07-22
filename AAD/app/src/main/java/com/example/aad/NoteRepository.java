@@ -6,33 +6,33 @@ import android.os.AsyncTask;
 
 import java.util.List;
 
-public class NoteRepository {
+class NoteRepository {
     private NoteDao noteDao;
     private LiveData<List<Note>> allNotes;
 
-    public NoteRepository(Application application){
+    NoteRepository(Application application){
         NoteDatabase database = NoteDatabase.getInstance(application);
         noteDao = database.noteDao();
         allNotes = noteDao.getALLNotes();
     }
 
-    public void insert(Note note){
+    void insert(Note note){
         new InsertNoteAsyncTask(noteDao).execute(note);
     }
 
-    public void update(Note note){
+    void update(Note note){
         new UpdateNoteAsyncTask(noteDao).execute(note);
     }
 
-    public void delete(Note note){
+    void delete(Note note){
         new DeleteNoteAsyncTask(noteDao).execute(note);
     }
 
-    public void deleteAllNotes(){
+    void deleteAllNotes(){
         new DeleteAllNoteAsyncTask(noteDao).execute();
     }
 
-    public LiveData<List<Note>> getAllNotes(){
+    LiveData<List<Note>> getAllNotes(){
         return allNotes;}
 
     private static class InsertNoteAsyncTask extends AsyncTask<Note, Void, Void> {

@@ -9,10 +9,8 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 
-@Database(entities = {Note.class}, version = 1, exportSchema = false
-
-)
-public abstract class NoteDatabase extends RoomDatabase {
+@Database(entities = {Note.class},version = 1)
+abstract class NoteDatabase extends RoomDatabase {
 
     private static NoteDatabase instance;
 
@@ -33,11 +31,11 @@ public abstract class NoteDatabase extends RoomDatabase {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
+            new PopulateDbAsyncTask(instance).execute();
         }
     };
 
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
-
         private NoteDao noteDao;
 
         private PopulateDbAsyncTask(NoteDatabase db) {
