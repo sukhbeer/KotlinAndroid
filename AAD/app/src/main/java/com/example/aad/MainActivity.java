@@ -3,15 +3,19 @@ package com.example.aad;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 
 import java.util.List;
 
@@ -41,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         final NoteAdapter adapter = new NoteAdapter();
         recyclerView.setAdapter(adapter);
 
-
         noteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
         noteViewModel.getAllNotes().observe(this, new Observer<List<Note>>() {
             @Override
@@ -49,6 +52,20 @@ public class MainActivity extends AppCompatActivity {
                 adapter.setNotes(notes);
             }
         });
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                noteViewModel.delete(adapter.getNoteAt(viewHolder.getAdapterPosition()));
+                Toast.makeText(MainActivity.this, "Note Deleted", Toast.LENGTH_SHORT).show();
+            }
+        }).attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -58,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == ADD_NOTE_REQUEST && resultCode == RESULT_OK) {
             String title = data.getStringExtra(AddNoteActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddNoteActivity.EXTRA_DESCRIPTION);
-            int priority = (int) data.getIntExtra(AddNoteActivity.EXTRA_PRIORITY, 1);
+            int priority = data.getIntExtra(AddNoteActivity.EXTRA_PRIORITY, 1);
 
             Note note = new Note(title, description, priority);
             noteViewModel.insert(note);
@@ -66,6 +83,26 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Note Saved", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Note not saved", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add_note, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete_all:
+                noteViewModel.deleteAllNotes();
+                Toast.makeText(this, "All notes deleted", Toast.LENGTH_SHORT).show();
+                return true;
+
+                default:
+                    return super.onOptionsItemSelected(item);
         }
     }
 }
