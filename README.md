@@ -1,2 +1,2 @@
 # KotlinAndroid
-## AAD code is practice of android architecture component.
+## AAD code is android architecture component topic.
