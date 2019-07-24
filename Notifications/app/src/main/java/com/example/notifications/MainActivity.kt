@@ -17,11 +17,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private val updateNOTIFICATION: String = "com.example.notifications.updateNOTIFICATION"
-    private val PRIMARY_CHANNEL_ID: String = "primary_notification_channel"
-    private var notificationManager: NotificationManager? = null
-    private val NOTIFICATION_ID: Int = 0
+    private val primaryChannelId: String = "primary_notification_channel"
+    private lateinit var notificationManager: NotificationManager
+    private val notificationId: Int = 0
 
-    val mReciver = NotificationReceiver()
+    private val mReceiver = NotificationReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         createNotificationChannel()
 
-        registerReceiver(mReciver, IntentFilter(updateNOTIFICATION))
+        registerReceiver(mReceiver, IntentFilter(updateNOTIFICATION))
 
         //notify_button
         notify.setOnClickListener {
@@ -46,28 +46,30 @@ class MainActivity : AppCompatActivity() {
             cancelNotification()
         }
 
-        setNotificationButtonState(true, false, false)
+        setNotificationButtonState(isNotifyEnabled = true, isUpdateEnabled = false, isCancelEnabled = false)
 
     }
 
     //Complete
     override fun onDestroy() {
-        unregisterReceiver(mReciver)
+        unregisterReceiver(mReceiver)
         super.onDestroy()
     }
 
     //Complete
     private fun sendNotification() {
         val updateIntent = Intent(updateNOTIFICATION)
-        val updatePendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_ID,
-            updateIntent, PendingIntent.FLAG_ONE_SHOT)
+        val updatePendingIntent = PendingIntent.getBroadcast(
+            this, notificationId,
+            updateIntent, PendingIntent.FLAG_ONE_SHOT
+        )
 
 
         val notifyBuilder: NotificationCompat.Builder = getNotification()
 
-        notifyBuilder.addAction(R.drawable.ic_update,"Update",updatePendingIntent)
+        notifyBuilder.addAction(R.drawable.ic_update, "Update", updatePendingIntent)
 
-        notificationManager?.notify(NOTIFICATION_ID, notifyBuilder.build())
+        notificationManager.notify(notificationId, notifyBuilder.build())
 
         setNotificationButtonState(isNotifyEnabled = false, isUpdateEnabled = true, isCancelEnabled = true)
 
@@ -75,22 +77,25 @@ class MainActivity : AppCompatActivity() {
 
     //Code complete
     private fun createNotificationChannel() {
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE)
+                as NotificationManager
 
         if (android.os.Build.VERSION.SDK_INT >=
             android.os.Build.VERSION_CODES.O
-        ){
+        ) {
             //Create NotificationChannel
             val channel =
-                NotificationChannel(PRIMARY_CHANNEL_ID, 
+                NotificationChannel(
+                    primaryChannelId,
                     "Mascot Notification",
-                    NotificationManager.IMPORTANCE_HIGH)
+                    NotificationManager.IMPORTANCE_HIGH
+                )
 
             channel.enableLights(true)
             channel.lightColor = Color.RED
             channel.enableVibration(true)
             channel.description = "Notification from Mascot"
-            notificationManager?.createNotificationChannel(channel)
+            notificationManager.createNotificationChannel(channel)
 
         }
     }
@@ -101,25 +106,26 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
 
         val notificationPendingIntent = PendingIntent.getActivity(
-            this, NOTIFICATION_ID,
+            this, notificationId,
             intent, PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        return NotificationCompat.Builder(this@MainActivity,
-            NOTIFICATION_ID.toString())
-            .setContentTitle("You've been notified")
-            .setContentText("This is you notification text.")
+        return NotificationCompat
+            .Builder(this, primaryChannelId)
+            .setContentTitle("Notification Title")
+            .setContentText("Notification Description")
             .setSmallIcon(R.drawable.ic_launcher_background)
-            .setAutoCancel(true)
+            .setAutoCancel(true).setContentIntent(notificationPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .setContentIntent(notificationPendingIntent)
     }
 
     //Code Complete
     fun updateNotification() {
-        val androidImage = BitmapFactory.decodeResource(resources,
-            R.drawable.mascot_1)
+        val androidImage = BitmapFactory.decodeResource(
+            resources,
+            R.drawable.mascot_1
+        )
 
         val notifyBuilder: NotificationCompat.Builder = getNotification()
 
@@ -129,16 +135,16 @@ class MainActivity : AppCompatActivity() {
                 .setBigContentTitle("Notification Update")
         )
 
-        notificationManager?.notify(NOTIFICATION_ID, notifyBuilder.build())
+        notificationManager.notify(notificationId, notifyBuilder.build())
 
-        setNotificationButtonState(false, false, true);
+        setNotificationButtonState(isNotifyEnabled = false, isUpdateEnabled = false, isCancelEnabled = true)
     }
 
     //Complete
     private fun cancelNotification() {
-        notificationManager?.cancel(NOTIFICATION_ID)
+        notificationManager.cancel(notificationId)
 
-        setNotificationButtonState(true, false, false)
+        setNotificationButtonState(isNotifyEnabled = true, isUpdateEnabled = false, isCancelEnabled = false)
     }
 
     //Complete
